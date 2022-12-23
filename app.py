@@ -388,7 +388,6 @@ def update():
 
         # If user not admin render apology
         if user.username != "admin":
-            flash(f"{user}", "info")
             return apology("You need to be logged in as admin")
 
         # Get item id
@@ -546,7 +545,7 @@ def changepassword():
 
     else:
         display_data = Users.query.get(session["user_id"])
-        
+
         return render_template("changepassword.html", display_data = display_data)
 
 # Run flask app
