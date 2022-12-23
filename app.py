@@ -82,6 +82,7 @@ def index():
 
 
 @app.route("/cashier", methods=["GET", "POST"])
+@login_required
 def cashier():
     """Cashier page, to add orders"""
 
@@ -112,6 +113,7 @@ def cashier():
 
 
 @app.route("/addorder", methods=["POST"])
+@login_required
 def addorder():
     """Add order to cart"""
 
@@ -127,6 +129,7 @@ def addorder():
 
 
 @app.route("/prune")
+@login_required
 def prune():
     """Delete all items in cart"""
 
@@ -139,6 +142,7 @@ def prune():
 
 
 @app.route("/edit", methods=["POST"])
+@login_required
 def edit():
     """Edit item in cart (custom)"""
 
@@ -202,6 +206,7 @@ def edit():
 
 
 @app.route("/push_kitchen")
+@login_required
 def push_kitchen():
     # Query all data with customer name
     data = Operations.query.filter(Operations.customer == session["customer_name"], Operations.status == 'queue', Operations.user_id == session["user_id"]).all()
@@ -224,11 +229,13 @@ def push_kitchen():
 
 
 @app.route("/edit/<int:item_id>")
+@login_required
 def editdraft(item_id):
     return render_template("edit.html", item_id = item_id)
     
 
 @app.route("/delete/<int:id>")
+@login_required
 def delete(id):
     """Delete item from cart"""
 
@@ -248,6 +255,7 @@ def delete(id):
 
 
 @app.route("/cancel")
+@login_required
 def cancel():
     """Cancel order, routes user back to homepage"""
 
@@ -261,6 +269,7 @@ def cancel():
 
 
 @app.route("/kitchen")
+@login_required
 def kitchen():
     """Monitor page for kitchen crew"""
     display_data = db.session.query(Operations, Operations.id, Operations.food_id, Operations.customer, Operations.custom_display, Operations.status, Food.foodname).join(Food).filter(Operations.status == 'KITCHEN', Operations.user_id == session["user_id"]).all()
@@ -269,6 +278,7 @@ def kitchen():
 
 
 @app.route("/deletekitchen/<int:id>")
+@login_required
 def deletekitchen(id):
     """Delete item from cart"""
 
@@ -289,6 +299,7 @@ def deletekitchen(id):
 
 
 @app.route("/serve/<int:id>")
+@login_required
 def serve(id):
     """Change item status to ready"""
 
@@ -304,6 +315,7 @@ def serve(id):
 
 
 @app.route("/servecust/<name>")
+@login_required
 def servecust(name):
     """Change all item status with customer name"""
 
@@ -323,6 +335,7 @@ def servecust(name):
 
 
 @app.route("/monitor", methods=["GET", "POST"])
+@login_required
 def monitor():
     """Display order with status ready"""
 
@@ -347,6 +360,7 @@ def monitor():
 
 
 @app.route("/complete/<name>")
+@login_required
 def complete(name):
     # Get completed item with name
     completed_group = Operations.query.filter(Operations.customer == name, Operations.status == "READY", Operations.user_id == session["user_id"]).all()
@@ -365,6 +379,7 @@ def complete(name):
 
 
 @app.route("/update", methods=["GET", "POST"])
+@login_required
 def update():
     """Update food prices"""
     if request.method == "POST":
@@ -403,8 +418,9 @@ def update():
 
 
 @app.route("/history")
+@login_required
 def history():
-    display_data = db.session.query(Operations, Operations.id, Operations.customer, Operations.custom_display, Operations.order_time, Food.foodname, Food.price).join(Food).filter(Operations.user_id == session["user_id"]).all()
+    display_data = db.session.query(Operations, Operations.id, Operations.customer, Operations.custom_display, Operations.order_time, Operations.status, Food.foodname, Food.price).join(Food).filter(Operations.user_id == session["user_id"], Operations.status == "COMPLETED").all()
 
     return render_template("history.html", display_data = display_data)
 
@@ -500,6 +516,38 @@ def register():
     else:
         return render_template("register.html")
 
+
+@app.route("/changepassword", methods=["GET", "POST"])
+@login_required
+def changepassword():
+    if request.method == "POST":
+        password = request.form.get("password")
+        confirmation = request.form.get("confirmation")
+
+        # Ensure password was submitted
+        if not password or not password.isalnum():
+            return apology("must provide password (no special character)")
+
+        # Ensure password match confirmation
+        if not password == confirmation:
+            return apology("password confirmation does not match")
+   
+        # Hash password
+        hashed_password = generate_password_hash(password)
+
+        # Update userdata
+        userdata = Users.query.get(session["user_id"])
+        userdata.hash = hashed_password
+        db.session.commit()
+
+        flash("Password change success!", "success")
+
+        return redirect("/")
+
+    else:
+        display_data = Users.query.get(session["user_id"])
+        
+        return render_template("changepassword.html", display_data = display_data)
 
 # Run flask app
 if __name__ == "__main__":
