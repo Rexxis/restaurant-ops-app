@@ -7,6 +7,7 @@
 
 {% block main %}
     <h1 class="mb-5">Ready for pickup</h1>
+    <p>Click CUSTOMER NAME to serve all ready item for the same person<br>Click yellow COMPLETE button to complete 1 item only</p>
     <table class="table table-striped">
         <thead>
         <tr>
@@ -18,14 +19,17 @@
         <tbody>
         {% for data in display_data %}
         <tr>
-            <td scope="row" class="font-bold">{{ data.customer }}</td>
+            <td scope="row" class="font-bold"><a href=/complete/{{data.customer}} class="btn btn-danger">{{data.customer}}</a></td>
             <td class="font-bold">{{ data.foodname }}</td>
             <td class="font-bold">{{ data.status }}</td>
             <td>
-                <form action="/monitor" method="POST">
-                    <input type="hidden" name="id" value="{{data.id}}">
-                    <input type="submit" class="btn btn-danger" value="COMPLETE">
-                </form>
+                <div style="display: block;">
+
+                    <form action="/monitor" method="POST">
+                        <input type="hidden" name="id" value="{{data.id}}">
+                        <input type="submit" class="btn btn-warning" value="COMPLETE">
+                    </form>
+                </div>
             </td>
             
         </tr> 

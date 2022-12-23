@@ -46,6 +46,7 @@ class Operations(db.Model):
     status = db.Column(db.String, default="queue", nullable=False)
     custom_display = db.Column(db.String, default=None)
     order_time = db.Column(db.DateTime, default = datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     def __repr__(self) -> str:
         return f"Operations: {self.id}"
@@ -70,20 +71,6 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
-
-
-@app.route("/query_test", methods=["GET", "POST"])
-def query_test():
-
-    if request.method == "POST":
-
-        requested = request.form.get("username")
-        queries = Users.query.filter_by(content='TEST 1').all()
-
-        return render_template("test_result.html", queries = queries)
-
-    else:
-        return  render_template("query_test.html")
 
 
 @app.route("/", methods=["GET","POST"])
@@ -111,7 +98,7 @@ def cashier():
             return apology("Enter customer name from homepage")
 
         # Get data from database
-        display_data = db.session.query(Operations, Operations.id, Operations.food_id, Operations.custom_display, Food.foodname, Food.price).join(Food).filter(Operations.customer == session["customer_name"], Operations.status == 'queue').all()
+        display_data = db.session.query(Operations, Operations.id, Operations.food_id, Operations.custom_display, Food.foodname, Food.price).join(Food).filter(Operations.customer == session["customer_name"], Operations.status == 'queue', Operations.user_id == session["user_id"]).all()
 
         total = 0
 
@@ -132,7 +119,7 @@ def addorder():
     new_order = Food.query.filter_by(id = request.form.get("food_id")).all()
 
     # Add new data to operations
-    new_operation = Operations(customer = session["customer_name"], food_id = new_order[0].id)
+    new_operation = Operations(customer = session["customer_name"], food_id = new_order[0].id, user_id = session["user_id"])
     db.session.add(new_operation)
     db.session.commit()
     
@@ -144,7 +131,7 @@ def prune():
     """Delete all items in cart"""
 
     # Delete all data with customer name and status queue
-    db.session.query(Operations).filter(Operations.customer == session["customer_name"], Operations.status == 'queue').delete()
+    db.session.query(Operations).filter(Operations.customer == session["customer_name"], Operations.status == 'queue', Operations.user_id == session["user_id"]).delete()
     db.session.commit()
 
     # Redirect user to cashier page
@@ -189,7 +176,7 @@ def edit():
         new_order = Food.query.filter_by(id = 101).all()
 
         # Add new data to operations
-        new_operation = Operations(customer = session["customer_name"], food_id = new_order[0].id)
+        new_operation = Operations(customer = session["customer_name"], food_id = new_order[0].id, user_id = session["user_id"])
         db.session.add(new_operation)
         db.session.commit()
     
@@ -198,7 +185,7 @@ def edit():
         new_order = Food.query.filter_by(id = 102).all()
 
         # Add new data to operations
-        new_operation = Operations(customer = session["customer_name"], food_id = new_order[0].id)
+        new_operation = Operations(customer = session["customer_name"], food_id = new_order[0].id, user_id = session["user_id"])
         db.session.add(new_operation)
         db.session.commit()
     
@@ -207,7 +194,7 @@ def edit():
         new_order = Food.query.filter_by(id = 103).all()
 
         # Add new data to operations
-        new_operation = Operations(customer = session["customer_name"], food_id = new_order[0].id)
+        new_operation = Operations(customer = session["customer_name"], food_id = new_order[0].id, user_id = session["user_id"])
         db.session.add(new_operation)
         db.session.commit()
     
@@ -217,7 +204,7 @@ def edit():
 @app.route("/push_kitchen")
 def push_kitchen():
     # Query all data with customer name
-    data = Operations.query.filter(Operations.customer == session["customer_name"], Operations.status == 'queue').all()
+    data = Operations.query.filter(Operations.customer == session["customer_name"], Operations.status == 'queue', Operations.user_id == session["user_id"]).all()
 
     # Update status to kitchen
     for row in data:
@@ -276,7 +263,7 @@ def cancel():
 @app.route("/kitchen")
 def kitchen():
     """Monitor page for kitchen crew"""
-    display_data = db.session.query(Operations, Operations.id, Operations.food_id, Operations.customer, Operations.custom_display, Operations.status, Food.foodname).join(Food).filter(Operations.status == 'KITCHEN').all()
+    display_data = db.session.query(Operations, Operations.id, Operations.food_id, Operations.customer, Operations.custom_display, Operations.status, Food.foodname).join(Food).filter(Operations.status == 'KITCHEN', Operations.user_id == session["user_id"]).all()
 
     return render_template("kitchen.html", display_data = display_data)
 
@@ -354,16 +341,41 @@ def monitor():
         return redirect("/monitor")
 
     else:
-        display_data = db.session.query(Operations, Operations.id, Operations.food_id, Operations.customer, Operations.custom_display, Operations.status, Food.foodname).join(Food).filter(Operations.status == 'READY').all()
+        display_data = db.session.query(Operations, Operations.id, Operations.food_id, Operations.customer, Operations.custom_display, Operations.status, Food.foodname).join(Food).filter(Operations.status == 'READY', Operations.user_id == session["user_id"]).all()
 
         return render_template("monitor.html", display_data = display_data)
+
+
+@app.route("/complete/<name>")
+def complete(name):
+    # Get completed item with name
+    completed_group = Operations.query.filter(Operations.customer == name, Operations.status == "READY", Operations.user_id == session["user_id"]).all()
+
+    # Update item status
+    for item in completed_group:
+        item.status = "COMPLETED"
+    
+    total = len(completed_group)
+
+    db.session.commit()
+
+    flash(f"Completed {total} items for {item.customer}","warning")
+
+    return redirect("/monitor")
 
 
 @app.route("/update", methods=["GET", "POST"])
 def update():
     """Update food prices"""
-
     if request.method == "POST":
+        # Check username
+        user = Users.query.filter(Users.id == session["user_id"]).first()
+
+        # If user not admin render apology
+        if user.username != "admin":
+            flash(f"{user}", "info")
+            return apology("You need to be logged in as admin")
+
         # Get item id
         item_id = request.form.get("id")
         new_price = float(request.form.get("newprice"))
@@ -392,7 +404,7 @@ def update():
 
 @app.route("/history")
 def history():
-    display_data = db.session.query(Operations, Operations.id, Operations.customer, Operations.custom_display, Operations.order_time, Food.foodname, Food.price).join(Food).all()
+    display_data = db.session.query(Operations, Operations.id, Operations.customer, Operations.custom_display, Operations.order_time, Food.foodname, Food.price).join(Food).filter(Operations.user_id == session["user_id"]).all()
 
     return render_template("history.html", display_data = display_data)
 
