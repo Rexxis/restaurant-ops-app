@@ -1,0 +1,45 @@
+body {
+    width: 100%;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    margin:0 auto;
+}
+
+#customer_name {
+    margin-right: 3px;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.text-left {
+    text-align: left;
+}
+
+#radio-form {
+    max-width: 40%;
+}
+
+#radio-form p {
+    font-weight: bold;
+}
+
+#edit-submit {
+    margin: 0 auto;
+    width: 100px;
+}
+
+.narrow {
+    width: fit-content;
+}
+
+#main-card {
+    max-width: 900px;
+}

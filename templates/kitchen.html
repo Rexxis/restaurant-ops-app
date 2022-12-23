@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <title>Kitchen</title>
+    <meta http-equiv="refresh" content="5">
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-5">Order Queue</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Customer</th>
+            <th scope="col">Item</th>
+            <th scope="col">Status</th>
+            <th scope="col">Custom</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data in display_data %}
+        <tr>
+            <td scope="row">{{ data.customer }}</td>
+            <td class="font-bold">{{ data.foodname }}</td>
+            <td>{{ data.status }}</td>
+            <td class="font-bold">{{ data.custom_display }}</td>
+            <td><a href="/deletekitchen/{{data.id}}" class="btn btn-warning text-left">CANCEL</a>    <a href="/serve/{{data.id}}" class="btn btn-success">SERVE ITEM</a></td>
+            <td><a href="/servecust/{{ data.customer }}" class="btn btn-danger">SERVE ALL ({{ data.customer }})</a></td>
+        </tr> 
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

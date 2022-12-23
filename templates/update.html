@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <title>Update</title>
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-5">Update Price Panel</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Foodname</th>
+            <th scope="col">Price</th>
+            <th scope="col">New Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data in display_data %}
+        <tr>
+            <td scope="row">{{ data.foodname }}</td>
+            <td class="font-bold">{{ data.price }}</td>
+            <td>
+                <form id="newprice" action="/update" method="POST">
+                    <input type="hidden" name="id" value="{{data.id}}">
+                    <input type="number" name="newprice" step="0.25" value="{{data.price}}">
+                </form>
+            </td>
+            <td><button type="submit" form="newprice" class="btn btn-danger">UPDATE PRICE</button></td>
+        </tr> 
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

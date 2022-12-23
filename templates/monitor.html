@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <title>Monitor</title>
+    <meta http-equiv="refresh" content="5">
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-5">Ready for pickup</h1>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Customer</th>
+            <th scope="col">Item</th>
+            <th scope="col">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data in display_data %}
+        <tr>
+            <td scope="row" class="font-bold">{{ data.customer }}</td>
+            <td class="font-bold">{{ data.foodname }}</td>
+            <td class="font-bold">{{ data.status }}</td>
+            <td>
+                <form action="/monitor" method="POST">
+                    <input type="hidden" name="id" value="{{data.id}}">
+                    <input type="submit" class="btn btn-danger" value="COMPLETE">
+                </form>
+            </td>
+            
+        </tr> 
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

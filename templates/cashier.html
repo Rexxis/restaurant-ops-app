@@ -1,0 +1,156 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <title>Cashier</title>
+{% endblock %}
+
+{% block main %}
+    <h1>Cashier</h1>
+    <div class="container">
+        <div class="container text-center mt-5">
+            <div class="row">
+                <div class="col-6">
+                    <div class="row">
+                        <div class="col">
+                            <div class="card" style="width: 10rem;">
+                                <div class="card-body">
+                                  <p class="card-text">Beef Burger</p>
+                                  <form action="/addorder" method="POST">
+                                    <input type="hidden" name="food_id" value="1">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                  </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="card" style="width: 10rem;">
+                                <div class="card-body">
+                                  <p class="card-text">Cheeseburger</p>
+                                  <form action="/addorder" method="POST">
+                                    <input type="hidden" name="food_id" value="2">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                  </form>
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="card" style="width: 10rem;">
+                                <div class="card-body">
+                                  <p class="card-text">Chicken Burger</p>
+                                  <form action="/addorder" method="POST">
+                                    <input type="hidden" name="food_id" value="3">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                  </form>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col-sm">
+                            <div class="card" style="width: 10rem;">
+                                <div class="card-body">
+                                  <p class="card-text">Spicy C. Burger</p>
+                                  <form action="/addorder" method="POST">
+                                    <input type="hidden" name="food_id" value="4">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                  </form>
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="card" style="width: 10rem;">
+                                <div class="card-body">
+                                  <p class="card-text">Mozza Burger</p>
+                                  <form action="/addorder" method="POST">
+                                    <input type="hidden" name="food_id" value="5">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                  </form>
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="card" style="width: 10rem;">
+                                <div class="card-body">
+                                  <p class="card-text">French Fries</p>
+                                  <form action="/addorder" method="POST">
+                                    <input type="hidden" name="food_id" value="6">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                  </form>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
+                    <div class="row mt-5">
+                        <div class="col-sm">
+                            <div class="card" style="width: 10rem;">
+                                <div class="card-body">
+                                  <p class="card-text">Diet Coke</p>
+                                  <form action="/addorder" method="POST">
+                                    <input type="hidden" name="food_id" value="51">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                  </form>
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="card" style="width: 10rem;">
+                                <div class="card-body">
+                                  <p class="card-text">Coca Cola</p>
+                                  <form action="/addorder" method="POST">
+                                    <input type="hidden" name="food_id" value="52">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                  </form>
+                                </div>
+                              </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="card" style="width: 10rem;">
+                                <div class="card-body">
+                                  <p class="card-text">Fanta</p>
+                                  <form action="/addorder" method="POST">
+                                    <input type="hidden" name="food_id" value="53">
+                                    <input type="submit" class="btn btn-primary" value="Add">
+                                  </form>
+                                </div>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                  <h5 id="customer-display">Customer: {{ name }}</h5>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Custom</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for data in display_data %}
+                      <tr>
+                        <td scope="row">{{ data.foodname }}</td>
+                        <td>{{ data.price }}</td>
+                        {% if data.food_id < 100 %}
+                        <td>{{ data.custom_display }}</td>
+                        <td>[<a href="/edit/{{data.id}}">edit</a>] [<a href="/delete/{{data.id}}">delete</a>]</td>
+                        {% endif %}
+                      </tr> 
+                      {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <td class="font-bold">TOTAL: </td>
+                        <td class="font-bold">{{total}}</td>
+                        <td></td>
+                    </tfoot>
+                  </table>
+                  <a href="/push_kitchen" class="btn btn-warning">Send to kitchen</a>
+                  <a href="/prune" class="btn btn-danger">Clear cart</a>
+                  <a href="/cancel" class="btn btn-info">Cancel Order</a>
+                </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    
+{% endblock %}

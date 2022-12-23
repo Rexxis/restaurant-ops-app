@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block head %}
+    <title>History</title>
+{% endblock %}
+
+{% block main %}
+    <h1 class="mb-5">Order History</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Order Time</th>
+            <th scope="col">Customer</th>
+            <th scope="col">Item</th>
+            <th scope="col">Custom</th>
+            <th scope="col">Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data in display_data %}
+        <tr>
+            <td scope="row">{{ data.order_time.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+            <td class="font-bold">{{ data.customer }}</td>
+            <td>{{ data.foodname }}</td>
+            <td>{{ data.custom_display }}</td>
+            <td>{{ data.price }}</td>
+        </tr> 
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

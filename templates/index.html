@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+
+{% block head %}
+    <title>Main</title>
+{% endblock %}
+
+{% block main %}
+    <h1>Best Burger Inc.</h1>
+    <div class="container">
+        <div class="row mx-auto" id="main-card">
+            <div class="card mx-auto mt-5" style="width: 24rem;">
+                <div class="card-body">
+                <h5 class="card-title">Create New Order</h5>
+                <p class="card-text">Don't forget to smile :)</p>
+                <form action="/cashier" method="POST">
+                    <input type="text" id="customer_name" name="customer_name" placeholder="Customer Name" required>
+                    <input class="btn btn-primary" type="submit" value="Order">
+                </form>
+                </div>
+            </div>
+            <div class="card mx-auto mt-5" style="width: 24rem;">
+                <div class="card-body">
+                    <h5 class="card-title">Change Item Price</h5>
+                    <p class="card-text">Please refresh the system price update</p>
+                    <a href="/update" class="btn btn-danger">Update Price</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
