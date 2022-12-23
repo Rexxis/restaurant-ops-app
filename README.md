@@ -4,6 +4,8 @@
 
 This is a restaurant operations management and monitoring web app.
 
+APP
+----------------
 Features :
 - Point of sale (PoS) with item customization
 - Kitchen order queue and customer customization tracker
