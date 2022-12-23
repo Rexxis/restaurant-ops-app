@@ -1,5 +1,5 @@
 # RESTAURANT OPERATIONS APP
-#### Video Demo: <url>
+#### Video Demo: https://youtu.be/JhKSzqQeWBE
 #### Description:
 
 This is a restaurant operations management and monitoring web app.

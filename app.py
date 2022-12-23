@@ -320,7 +320,7 @@ def servecust(name):
     """Change all item status with customer name"""
 
     #Get item
-    group_to_serve = Operations.query.filter_by(customer = name).all()
+    group_to_serve = Operations.query.filter(Operations.customer == name, Operations.status == "KITCHEN", Operations.user_id == session["user_id"]).all()
 
     for group in group_to_serve:
         group.status = "READY"
