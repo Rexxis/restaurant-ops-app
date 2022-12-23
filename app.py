@@ -51,8 +51,8 @@ class Operations(db.Model):
         return f"Operations: {self.id}"
 
 # Create database
-# with app.app_context():
-#     db.create_all()
+with app.app_context():
+    db.create_all()
 
 # Ensure templates auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
